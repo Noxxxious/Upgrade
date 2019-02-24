@@ -19,6 +19,7 @@
 #include <linux/pm_opp.h>
 
 #include <soc/samsung/exynos-cpu_hotplug.h>
+#include <soc/samsung/cal-if.h>
 
 #include "exynos-acme.h"
 
@@ -161,14 +162,14 @@ static ssize_t store_cpufreq_min_limit(struct kobject *kobj,
 		scale++;
 
 		if (set_limit) {
-			req_limit_freq = min(req_limit_freq, domain->max_freq);
+			req_limit_freq = min(req_limit_freq, (unsigned int)cal_dfs_get_max_freq(domain->cal_id));
 			pm_qos_update_request(&domain->user_min_qos_req, req_limit_freq);
 			set_limit = false;
 			continue;
 		}
 
 		if (set_max) {
-			unsigned int qos = domain->max_freq;
+			unsigned int qos = cal_dfs_get_max_freq(domain->cal_id);
 
 			if (domain->user_default_qos)
 				qos = domain->user_default_qos;
@@ -213,7 +214,7 @@ static ssize_t store_cpufreq_min_limit(struct kobject *kobj,
 				set_limit = true;
 		}
 
-		freq = min(freq, domain->max_freq);
+		freq = min(freq, (unsigned int)cal_dfs_get_max_freq(domain->cal_id));
 		pm_qos_update_request(&domain->user_min_qos_req, freq);
 
 		control_boost(1);
@@ -273,14 +274,14 @@ static ssize_t store_cpufreq_min_limit_wo_boost(struct kobject *kobj,
 		scale++;
 
 		if (set_limit) {
-			req_limit_freq = min(req_limit_freq, domain->max_freq);
+			req_limit_freq = min(req_limit_freq, (unsigned int)cal_dfs_get_max_freq(domain->cal_id));
 			pm_qos_update_request(&domain->user_min_qos_req, req_limit_freq);
 			set_limit = false;
 			continue;
 		}
 
 		if (set_max) {
-			unsigned int qos = domain->max_freq;
+			unsigned int qos = cal_dfs_get_max_freq(domain->cal_id);
 
 			if (domain->user_default_qos)
 				qos = domain->user_default_qos;
@@ -324,7 +325,7 @@ static ssize_t store_cpufreq_min_limit_wo_boost(struct kobject *kobj,
 				set_limit = true;
 		}
 
-		freq = min(freq, domain->max_freq);
+		freq = min(freq, (unsigned int)cal_dfs_get_max_freq(domain->cal_id));
 		pm_qos_update_request(&domain->user_min_qos_wo_boost_req, freq);
 
 		set_max = true;
