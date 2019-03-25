@@ -4,6 +4,7 @@
 #
 ################################################
 CONFIG_BOEFFLA_WL_BLOCKER=y
+CONFIG_WAKE_GESTURES=y
 
 CONFIG_ARM64=y
 CONFIG_64BIT=y
