@@ -108,6 +108,7 @@ static unsigned long long tap_time_pre = 0;
 static int touch_nr = 0, x_pre = 0, y_pre = 0;
 static bool touch_cnt = true;
 static int vib_strength = VIB_STRENGTH;
+static bool disable_gestures;
 
 static unsigned int sweep_y_limit = SWEEP_Y_LIMIT;
 static unsigned int sweep_x_limit = SWEEP_X_LIMIT;
@@ -139,6 +140,9 @@ static bool is_suspended(void)
 #if (WAKE_GESTURES_ENABLED)
 static void report_gesture(int gest)
 {
+	if (disable_gestures)
+		return;
+
 	pwrtrigger_time[1] = pwrtrigger_time[0];
 	pwrtrigger_time[0] = ktime_to_ms(ktime_get());	
 
@@ -171,6 +175,10 @@ static DECLARE_WORK(wake_presspwr_work, wake_presspwr);
 
 /* PowerKey trigger */
 static void wake_pwrtrigger(void) {
+
+	if (disable_gestures)
+		return;
+
 	pwrtrigger_time[1] = pwrtrigger_time[0];
 	pwrtrigger_time[0] = ktime_to_ms(ktime_get());
 	
@@ -567,6 +575,11 @@ static struct input_handler wg_input_handler = {
 	.id_table	= wg_ids,
 };
 
+void detect_prox(bool status)
+{
+	disable_gestures = status;
+}
+EXPORT_SYMBOL(detect_prox);
 
 /*
  * SYSFS stuff below here
