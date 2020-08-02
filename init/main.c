@@ -682,7 +682,9 @@ asmlinkage __visible void __init start_kernel(void)
 	build_all_zonelists(NULL, NULL);
 	page_alloc_init();
 
+#if !defined(CONFIG_SAMSUNG_PRODUCT_SHIP)
 	pr_notice("Kernel command line: %s\n", boot_command_line);
+#endif
 	/* Variant Detection */
 	if (strstr(boot_command_line, "G950")) {
 		pr_alert("FOUND NON-PLUS VARIANT");
